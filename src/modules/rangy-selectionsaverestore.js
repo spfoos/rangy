@@ -222,6 +222,30 @@ rangy.createModule("SaveRestore", ["WrappedRange"], function(api, module) {
         }
     }
 
+	function getMarkerElementText(doc, markerId) {
+	    var markerEl = gEBI(markerId, doc);
+	    if (markerEl) {
+		var el = (doc || document).createElement("div");
+		el.appendChild(markerEl);
+		return el.innerHTML
+	    }
+	}
+
+	function getMarkerTexts(savedSelection) {
+	    var ret = [];
+	    var rangeInfos = savedSelection.rangeInfos;
+            for (var i = 0, len = rangeInfos.length, rangeInfo; i < len; ++i) {
+		rangeInfo = rangeInfos[i];
+		if (rangeInfo.collapsed) {
+		    ret.push(getMarkerElementText(savedSelection.doc, rangeInfo.markerId));
+		} else {
+		    ret.push(getMarkerElementText(savedSelection.doc, rangeInfo.startMarkerId));
+		    ret.push(getMarkerElementText(savedSelection.doc, rangeInfo.endMarkerId));
+		}
+	    }
+	    return ret;
+	}
+
     api.util.extend(api, {
         saveRange: saveRange,
         restoreRange: restoreRange,
@@ -230,7 +254,8 @@ rangy.createModule("SaveRestore", ["WrappedRange"], function(api, module) {
         saveSelection: saveSelection,
         restoreSelection: restoreSelection,
         removeMarkerElement: removeMarkerElement,
-        removeMarkers: removeMarkers
+        removeMarkers: removeMarkers,
+	getMarkerTexts: getMarkerTexts
     });
 });
 /* build:modularizeEnd */
